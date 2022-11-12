@@ -4,7 +4,10 @@ from rest_framework import serializers
 from .models import User
 
 
-class AuthSignupSerializer(serializers.ModelSerializer):
+class AuthSignUpSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(max_length=256)
+    email = serializers.EmailField()
+
     class Meta:
         fields = (
             'email',
@@ -31,7 +34,7 @@ class AuthTokenSerializer(serializers.Serializer):
     )
 
 
-class UserSerrializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
             'username',

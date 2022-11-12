@@ -1,20 +1,14 @@
 from __future__ import annotations
 
 from django.conf import settings
-from django.contrib.auth.hashers import (
-    check_password,
-    make_password
-)
+from django.contrib.auth.hashers import check_password, make_password
 from django.core.mail import send_mail
+from django.db import IntegrityError
 from django.http import Http404
 from django.utils.crypto import get_random_string
-from rest_framework import (
-    filters,
-    generics,
-    status,
-    viewsets
-)
+from rest_framework import filters, generics, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -23,12 +17,8 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from . import permissions
 from .models import User
-from .serializers import (
-    AuthSignupSerializer,
-    AuthTokenSerializer,
-    MeUserSerrializer,
-    UserSerrializer
-)
+from .serializers import (AuthSignUpSerializer, AuthTokenSerializer,
+                          MeUserSerrializer, UserSerializer)
 
 
 class Auth:
@@ -48,47 +38,49 @@ class Auth:
         )
 
 
-def create_jwt_token(request):
-    pass
-
-
 class SignUpView(generics.GenericAPIView):
     queryset = User.objects.all()
-    serializer_class = AuthSignupSerializer
+    serializer_class = AuthSignUpSerializer
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        conf_code = Auth.create_conf_code()
-        serializer.save(
-            confirmation_code=Auth.hash_confirmation_code(
-                conf_code
-            )
-        )
+        try:
+            serializer.save()
+        except IntegrityError:
+            pass
 
-        user_email = serializer.data['email']
+        username = serializer.data['username']
+        email = serializer.data['email']
+        user = User.objects.filter(
+            username=username,
+            email=email
+        ).first()
+        if not user or user.confirmation_code:
+            raise ValidationError(
+                f'Username \'{username}\''
+                f' or email \'{email}\' is already taken'
+            )
+
+        conf_code = Auth.create_conf_code()
+        user.confirmation_code = Auth.hash_confirmation_code(
+            conf_code
+        )
+        user.save()
+
         message = f'confirmation_code: {conf_code}'
 
-        try:
-            send_mail(
-                subject='Registration confirmation',
-                message=message,
-                from_email=settings.EMAIL_CONF_CODE,
-                recipient_list=[user_email],
-                fail_silently=False,
-            )
-        except Exception as e:
-            user = get_object_or_404(
-                User,
-                email=user_email
-            )
-            user.delete()
-            raise e
-        else:
-            return Response(
-                serializer.data,
-                status=status.HTTP_200_OK
-            )
+        send_mail(
+            subject='Registration confirmation',
+            message=message,
+            from_email=settings.EMAIL_CONF_CODE,
+            recipient_list=[email],
+            fail_silently=False,
+        )
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
 
 
 class JWTTokenView(generics.GenericAPIView):
@@ -132,9 +124,9 @@ class JWTTokenView(generics.GenericAPIView):
 
 class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
-    lookup_value_regex = '^[\w.@+-]+$'  # noqa: W605
+    # lookup_value_regex = '^[\w.@+-]+$'  # noqa: W605
     queryset = User.objects.all()
-    serializer_class = UserSerrializer
+    serializer_class = UserSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['username']
     pagination_class = PageNumberPagination
