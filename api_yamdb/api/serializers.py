@@ -1,10 +1,10 @@
+from django.utils import timezone
 from rest_framework import serializers
 from reviews.models import (
     Category,
     Genre,
     Title
 )
-from django.utils import timezone
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -43,15 +43,13 @@ class TitleCreateSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-       model = Title
-       fields = ('id', 'name', 'year', 'description', 'genre', 'category')
-    
+        model = Title
+        fields = ('id', 'name', 'year', 'description', 'genre', 'category')
+
     def validate_year(self, value):
         year_now = timezone.now().year
         if value <= 0 or value > year_now:
             raise serializers.ValidationError(
-                'Enter the correct year(more than 0 and not more than current year)'
+                'Enter the correct year'
             )
         return value
-
-

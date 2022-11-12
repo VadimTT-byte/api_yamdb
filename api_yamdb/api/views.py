@@ -1,4 +1,7 @@
-from rest_framework import viewsets, mixins
+from rest_framework import (
+    mixins,
+    viewsets
+)
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from reviews.models import (
@@ -8,13 +11,13 @@ from reviews.models import (
 )
 
 from .filters import FilterForTitle
-
 from .serializers import (
     CategorySerializer,
     GenreSerializer,
-    TitleSerializer,
     TitleCreateSerializer,
+    TitleSerializer
 )
+
 # from users.permissions import (
 #     IsAdministrator,
 #     IsAuthorOrReadOnly,
