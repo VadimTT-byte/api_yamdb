@@ -2,8 +2,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from reviews.models import Category, Genre, Title
-from users.permissions import (IsAdministrator, IsAuthorOrReadOnly,
-                               IsModerator, ReadOnly)
+from users.permissions import IsAdministrator, ReadOnly
 
 from .filters import FilterForTitle
 from .serializers import (CategorySerializer, GenreSerializer,
@@ -23,7 +22,7 @@ class CategoryViewSet(CreateListModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = PageNumberPagination
-    permission_classes = [IsAdministrator | ReadOnly ]
+    permission_classes = [IsAdministrator | ReadOnly]
     filter_backends = (SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
