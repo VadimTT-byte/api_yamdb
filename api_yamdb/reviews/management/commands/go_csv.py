@@ -4,20 +4,20 @@ import os.path
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from reviews.models import (Category, Genre, GenreTitle,  # , Rewiew, Comments
-                            Title)
+from reviews.models import Category, Genre, GenreTitle, Review, Comment, Title
 
-# from users.models import User
+from users.models import User
 
 TABLES = {
     Category: 'category.csv',
     Genre: 'genre.csv',
     Title: 'titles.csv',
     GenreTitle: 'genre_title',
+    User: 'users.csv',
+    Review: 'review.csv',
+    Comment: 'comments.csv',
 }
-# User: 'users.csv',
-# Review: 'review.csv',
-# Comments: 'comments.csv',
+
 
 
 class Command(BaseCommand):
@@ -25,18 +25,18 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        # with open(os.path.join(settings.BASE_DIR, 'static', 'data',
-        #                         'users.csv'), 'r') as file:
-        #     csv_reader = csv.reader(file, delimiter=',')
-        #     for row in csv_reader:
-        #         if row[0] == 'id':
-        #              continue
-        #         User.objects.create(
-        #             id=int(row[0]),
-        #             username=row[1],
-        #             email=row[2],
-        #             role=row[3]
-        #         )
+        with open(os.path.join(settings.BASE_DIR, 'static', 'data',
+                                'users.csv'), 'r') as file:
+            csv_reader = csv.reader(file, delimiter=',')
+            for row in csv_reader:
+                if row[0] == 'id':
+                     continue
+                User.objects.create(
+                    id=int(row[0]),
+                    username=row[1],
+                    email=row[2],
+                    role=row[3]
+                )
 
         with open(os.path.join(settings.BASE_DIR, 'static', 'data',
                                'category.csv'), 'r', encoding="utf-8") as file:
@@ -81,28 +81,28 @@ class Command(BaseCommand):
                 GenreTitle.objects.create(title_id=int(row[1]),
                                           genre_id=int(row[2]))
 
-        # with open(os.path.join(settings.BASE_DIR, 'static', 'data',
-        #                        'review.csv'), 'r', encoding="utf-8") as f:
-        #     csv_reader = csv.reader(f, delimiter=',')
-        #     for row in csv_reader:
-        #         if row[0] == 'id':
-        #             continue
-        #         Review.objects.create(
-        #             title_id=int(row[1]),
-        #             text=row[2],
-        #             author=User.objects.get(pk=int(row[3])),
-        #             score=row[4], pub_date=row[5]
-        #         )
+        with open(os.path.join(settings.BASE_DIR, 'static', 'data',
+                               'review.csv'), 'r', encoding="utf-8") as f:
+            csv_reader = csv.reader(f, delimiter=',')
+            for row in csv_reader:
+                if row[0] == 'id':
+                    continue
+                Review.objects.create(
+                    title_id=int(row[1]),
+                    text=row[2],
+                    author=User.objects.get(pk=int(row[3])),
+                    score=row[4], pub_date=row[5]
+                )
 
-        # with open(os.path.join(settings.BASE_DIR, 'static', 'data',
-        #                        'comments.csv'), 'r', encoding="utf-8") as f:
-        #     csv_reader = csv.reader(f, delimiter=',')
-        #     for row in csv_reader:
-        #         if row[0] == 'id':
-        #             continue
-        #         Comments.objects.create(
-        #             review_id=int(row[1]),
-        #             text=row[2],
-        #             author=User.objects.get(pk=int(row[3])),
-        #             pub_date=[4]
-        #         )
+        with open(os.path.join(settings.BASE_DIR, 'static', 'data',
+                               'comments.csv'), 'r', encoding="utf-8") as f:
+            csv_reader = csv.reader(f, delimiter=',')
+            for row in csv_reader:
+                if row[0] == 'id':
+                    continue
+                Comment.objects.create(
+                    review_id=int(row[1]),
+                    text=row[2],
+                    author=User.objects.get(pk=int(row[3])),
+                    pub_date=[4]
+                )

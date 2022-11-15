@@ -4,16 +4,17 @@ from django.conf import settings
 from django.core.management import BaseCommand
 
 from users.models import User
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Review, Comment
 
 TABLES = {
     Category: 'category.csv',
     Genre: 'genre.csv',
     Title: 'titles.csv',
+    Review: 'review.csv',
+    Comment: 'comments.csv',
+    User: 'users.csv',
 }
-# Review: 'review.csv',
-# Comment: 'comments.csv',
-# User: 'users.csv',
+
 
 class Command(BaseCommand):
 
