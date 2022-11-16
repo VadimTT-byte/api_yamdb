@@ -1,10 +1,5 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-
-from django.core.validators import (
-    MaxValueValidator,
-    MinValueValidator
-)
-
 from users.models import User
 
 
@@ -82,6 +77,12 @@ class Title(models.Model):
         related_name='titles',
         verbose_name='Genre',
     )
+    # внес изменения
+    rating = models.IntegerField(
+        verbose_name='Rating',
+        null=True,
+        default=None
+    )
 
     def __str__(self) -> str:
         return self.name
@@ -101,9 +102,9 @@ class GenreTitle(models.Model):
         on_delete=models.CASCADE
     )
 
-
     def __str__(self):
         return f'{self.genre}'
+
 
 class Review(models.Model):
     author = models.ForeignKey(
