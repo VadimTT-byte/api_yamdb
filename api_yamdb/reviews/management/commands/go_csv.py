@@ -129,3 +129,4 @@ class Command(BaseCommand):
                     pub_date=row[4],
                 )
                 comment.save()
+        self.stdout.write(self.style.SUCCESS('******* ALL DATA LOAD *******'))
