@@ -1,10 +1,8 @@
 from django.utils import timezone
 from rest_framework import serializers
-from reviews.models import Category, Genre, Title, Review, Comment
-
 from rest_framework.exceptions import ValidationError
-
 from rest_framework.generics import get_object_or_404
+from reviews.models import Category, Comment, Genre, Review, Title
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -31,7 +29,15 @@ class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ('id', 'name', 'year', 'rating', 'description', 'genre', 'category')  # добавил 'rating'
+        fields = (
+            'id',
+            'name',
+            'year',
+            'rating',
+            'description',
+            'genre',
+            'category'
+        )
         read_only_fields = ('genre', 'category')
 
 
@@ -57,6 +63,7 @@ class TitleCreateSerializer(serializers.ModelSerializer):
                 'Enter the correct year'
             )
         return value
+
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(

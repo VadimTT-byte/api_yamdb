@@ -1,13 +1,16 @@
-from rest_framework import mixins, viewsets
 from django.db.models import Avg
+from rest_framework import mixins, viewsets
 from rest_framework.filters import SearchFilter
+from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
-from reviews.models import Category, Genre, Title, Review, Comment
-from users.permissions import IsAdministrator, ReadOnly, IsAuthorOrReadOnly, IsModerator
+from reviews.models import Category, Genre, Review, Title
+from users.permissions import (IsAdministrator, IsAuthorOrReadOnly,
+                               IsModerator, ReadOnly)
 
 from .filters import FilterForTitle
-from .serializers import (CategorySerializer, GenreSerializer,
-                          TitleCreateSerializer, TitleSerializer, CommentSerializer, ReviewSerializer)
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, ReviewSerializer,
+                          TitleCreateSerializer, TitleSerializer)
 
 
 class CreateListModelViewSet(
@@ -17,8 +20,6 @@ class CreateListModelViewSet(
     viewsets.GenericViewSet,
 ):
     pass
-
-from rest_framework.generics import get_object_or_404
 
 
 class CategoryViewSet(CreateListModelViewSet):
