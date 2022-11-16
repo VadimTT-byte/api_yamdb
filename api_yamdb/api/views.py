@@ -1,4 +1,5 @@
 from rest_framework import mixins, viewsets
+from django.db.models import Avg
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from reviews.models import Category, Genre, Title, Review, Comment
@@ -41,7 +42,9 @@ class GenreViewSet(CreateListModelViewSet):
 
 
 class TitleViewset(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.all().annotate(
+        Avg("reviews__score")  # добавил агрегацию
+    ).order_by("name")
     serializer_class = TitleSerializer
     pagination_class = PageNumberPagination
     permission_classes = [IsAdministrator | ReadOnly]
