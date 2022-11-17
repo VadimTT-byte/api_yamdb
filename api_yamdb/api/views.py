@@ -19,32 +19,27 @@ class CreateListModelViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
+    pagination_class = PageNumberPagination
+    permission_classes = [IsAdministrator | ReadOnly]
+    filter_backends = (SearchFilter,)
+    search_fields = ('name', )
+    lookup_field = 'slug'
     pass
 
 
 class CategoryViewSet(CreateListModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    pagination_class = PageNumberPagination
-    permission_classes = [IsAdministrator | ReadOnly]
-    filter_backends = (SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
 
 
 class GenreViewSet(CreateListModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    pagination_class = PageNumberPagination
-    permission_classes = [IsAdministrator | ReadOnly]
-    filter_backends = (SearchFilter,)
-    search_fields = ('name', )
-    lookup_field = 'slug'
 
 
 class TitleViewset(viewsets.ModelViewSet):
     queryset = Title.objects.all().annotate(
-        Avg("reviews__score")  # добавил агрегацию
+        Avg("reviews__score")
     ).order_by("name")
     serializer_class = TitleSerializer
     pagination_class = PageNumberPagination
@@ -57,11 +52,14 @@ class TitleViewset(viewsets.ModelViewSet):
         return TitleSerializer
 
 
-class ReviewViewSet(viewsets.ModelViewSet):
-    serializer_class = ReviewSerializer
+class ParentReviewCommentViewSet(viewsets.ModelViewSet):
+    ...
     pagination_class = PageNumberPagination
-
     permission_classes = [IsAdministrator | IsAuthorOrReadOnly | IsModerator]
+
+
+class ReviewViewSet(ParentReviewCommentViewSet):
+    serializer_class = ReviewSerializer
 
     def get_queryset(self):
         title = get_object_or_404(Title, pk=self.kwargs.get("title_id"))
@@ -73,11 +71,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, title=title)
 
 
-class CommentViewSet(viewsets.ModelViewSet):
+class CommentViewSet(ParentReviewCommentViewSet):
     serializer_class = CommentSerializer
-    pagination_class = PageNumberPagination
-
-    permission_classes = [IsAdministrator | IsAuthorOrReadOnly | IsModerator]
 
     def get_queryset(self):
         review = get_object_or_404(Review, pk=self.kwargs.get("review_id"))

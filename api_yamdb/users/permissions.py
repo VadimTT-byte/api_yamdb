@@ -9,10 +9,10 @@ class IsAdministrator(permissions.BasePermission):
     Allows access only to an administrator or a superuser.
     """
     def __check_is_admin(self, request):
-        return bool(
+        return (
             request.user
             and request.user.is_authenticated
-            and request.user.role == User.ADMIN
+            and request.user.is_admin
             or request.user.is_superuser
         )
 
@@ -30,7 +30,7 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
     Assumes the model instance has an `author` attribute.
     """
     def has_permission(self, request, view):
-        return bool(
+        return (
             request.user
             and request.user.is_authenticated
             or request.method in SAFE_METHODS
@@ -40,7 +40,7 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        return bool(
+        return (
             request.user
             and request.user.is_authenticated
             and request.user == obj.author
@@ -53,10 +53,10 @@ class IsModerator(permissions.BasePermission):
     Allows access only to a moderator or a superuser.
     """
     def __check_is_moderator(self, request):
-        return bool(
+        return (
             request.user
             and request.user.is_authenticated
-            and request.user.role == User.MODERATOR
+            and request.user.is_moderator
             or request.user.is_superuser
         )
 

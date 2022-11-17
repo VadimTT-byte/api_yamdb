@@ -124,7 +124,6 @@ class JWTTokenView(generics.GenericAPIView):
 
 class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
-    # lookup_value_regex = '^[\w.@+-]+$'  # noqa: W605
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [filters.SearchFilter]

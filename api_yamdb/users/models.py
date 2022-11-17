@@ -5,17 +5,17 @@ from django.utils.translation import gettext_lazy as _
 
 from .managers import CustomUserManager
 
+ADMIN = 'admin'
+MODERATOR = 'moderator'
+USER = 'user'
+USER_ROLES = [
+    (ADMIN, 'Администратор'),
+    (MODERATOR, 'Модератор '),
+    (USER, 'Пользователь'),
+]
+
 
 class User(AbstractUser):
-    ADMIN = 'admin'
-    MODERATOR = 'moderator'
-    USER = 'user'
-
-    USER_ROLES = [
-        (ADMIN, 'Администратор'),
-        (MODERATOR, 'Модератор '),
-        (USER, 'Пользователь'),
-    ]
 
     bio = models.TextField(
         blank=True
@@ -57,3 +57,11 @@ class User(AbstractUser):
             f'email={self.email}, '
             f'role={self.role}'
         )
+
+    @property
+    def is_admin(self):
+        return self.role == ADMIN
+
+    @property
+    def is_moderator(self):
+        return self.role == MODERATOR
