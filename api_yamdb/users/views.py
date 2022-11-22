@@ -56,7 +56,7 @@ class SignUpView(generics.GenericAPIView):
             username=username,
             email=email
         ).first()
-        if not user or user.confirmation_code:
+        if not user:  # or user.confirmation_code:
             raise ValidationError(
                 f'Username \'{username}\''
                 f' or email \'{email}\' is already taken'
